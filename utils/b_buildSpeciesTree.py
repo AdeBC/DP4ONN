@@ -45,7 +45,6 @@ def main():
 
 
 def usePathInformation(data):
-	print('replacing node id with path information......', end='')
 	# data = removeDuplicates(data)
 	new_data = []
 	for i, row in enumerate(data):
@@ -56,7 +55,6 @@ def usePathInformation(data):
 			new_data[i].append(';'.join(l))
 			# print(new_data[i][j])
 	
-	print('done !')
 	return new_data
 	
 

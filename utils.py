@@ -40,7 +40,7 @@ class super_tree(Tree):
 		for id in self.expand_tree(mode=1):
 			self[id].data = value
 
-	def from_paths(self, paths: list):
+	def from_paths(self, paths):
 		# tested
 		# check duplicated son-fathur relationship
 		for path in paths:
@@ -107,11 +107,11 @@ class super_tree(Tree):
 
 	def copy(self, ):
 		# not working
-		return species_tree(self.subtree(self.root), deep=True) 
+		return super_tree(self.subtree(self.root), deep=True) 
 
 	def remove_levels(self, level: int):
 		# tested
-		nids = self.expand_tree(mode=1)[::-1]
+		nids = list(self.expand_tree(mode=1))[::-1]
 		for nid in nids:
 			if self.level(nid) >= level:
 				self.remove_node(nid)  # check
@@ -145,59 +145,78 @@ class super_tree(Tree):
 class data_loader(object):
 
 	def __init__(self, path: str, ftype='.tsv'):
-		self.paths = self.get_file_paths(path, ftype=ftype)
+		# tested
+		self.ftype = ftype
+		self.paths = self.get_file_paths(path)
 	
-	def get_file_paths(self, path: str, ftype):
+	def get_file_paths(self, path: str):
 		# tested
 		return [os.path.join(root, file)
 		for root, dirs, files in os.walk(path) 
 		for file in files 
-		if os.path.splitext(file)[1] == ftype]
+		if os.path.splitext(file)[1] == self.ftype]
 	
-	def get_data(self, header=0):
+	def get_sample_count(self, ):
+		self.get_paths_keep()
+		split_paths = list(map(lambda x: os.path.split(x)[0].split('/')[-1], self.paths_keep))
+		self.sample_count = {i: split_paths.count(i) for i in set(split_paths)}
+		return self.sample_count
+
+	def get_paths_keep(self, ):
 		self.load_error_list()
 		self.paths_keep = list(filter(lambda x: x not in self.error_list, self.paths))
-		self.data = list(map(lambda x: read_csv(x, sep='\t', header=header).iloc(1)[1:], self.paths_keep))
+		return self.paths_keep
+
+	def get_data(self, header=1):
+		# tested
+		self.get_paths_keep()
+		self.data = list(map(lambda x: read_csv(x, sep='\t', header=header), self.paths_keep))
 		# self.data = map(lambda x: x.iloc(1)[1:], self.data)
 		return self.data
 
 	def save_error_list(self, ):
+		# tested
 		with open('tmp/error_list', 'w') as f:
 			f.write('\n'.join(self.error_msg.keys()))
 	
-	def load_error_list():
+	def load_error_list(self, ):
+		# tested
 		with open('tmp/error_list', 'r') as f:
 			self.error_list = f.readlines()
 
-	def check_data(self, header=0):
+	def check_data(self, header=1):
+		# tested
 		self.status = {}
 		for path in self.paths:
 			try: 
 				f = read_csv(path, header=header, sep='\t')
-				self.status[path] = [check_ncols(f), 
-				check_col_name(f), 
-				check_values(f)]
+				self.status[path] = [self.check_ncols(f), 
+				self.check_col_name(f), 
+				self.check_values(f)]
 
 			except:
 				self.status[path] = ['IOError','IOError','IOError']
-		self.error_msg = {path, status 
+		self.error_msg = {path: status 
 		for path, status in self.status.items() 
 		if list(set(status)) != ['True']}
 
-	def check_ncols(File):
+	def check_ncols(self, File):
+		# tested
 		if File.shape[1] == 3:
 			return 'True'
 		else:
 			return 'False'
 
-	def check_col_name(File):
+	def check_col_name(self, File):
+		# tested
 		Colnames = File.columns.tolist()
 		if Colnames[0] in ['# OTU ID', '#OTU ID']:
 			return 'True'
 		else:
 			return 'False'
 
-	def check_values(File):
+	def check_values(self, File):
+		# tested
 		Na_status = File.isna().values.any()
 		Neg_status = list(set([int(ele) >=0 for ele in File[File.columns.tolist()[1]]]))
 		if Na_status == True:
@@ -206,3 +225,17 @@ class data_loader(object):
 			return 'Negtive value error'
 		else:
 			return 'True'
+
+
+class id_converter(object):
+	def __init__(self, ):
+		pass
+	
+	def convert(self, ids_path: str, sep):
+		# tested, use path
+		ids = ids_path.split(sep)
+		tail = ids[-1].split('__')[-1]
+		ids = list(map(lambda x: x+tail if x[-2:] == '__' else x, ids))
+		ids = [sep.join(ids[0:i]) for i in range(1, len(ids)+1)]
+		self.nid = ids
+		return ids
