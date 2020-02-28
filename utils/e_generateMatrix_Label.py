@@ -240,9 +240,7 @@ def updateTree(tree):
 '''
 
 def generateMatrix(tree):
-	# prepare for enumeration
-	# print('generating matrix......', end='')
-	paths_to_leaves = tree.paths_to_leaves()		
+	paths_to_leaves = tree.paths_to_leaves()
 	ncol = max([len(path) for path in paths_to_leaves])
 	nrow = len(paths_to_leaves)
 	Matrix = zeros(ncol*nrow, dtype=float32).reshape(nrow, ncol)

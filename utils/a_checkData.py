@@ -46,7 +46,7 @@ def check(path, f, status):
 	return status
 
 
-def findAllFiles(path):
+def findAllFiles(path): return [os.path.join(root, file) for root, dirs, files in os.walk(path) for file in files if os.path.splitext(file)[1] == ftype]
 	find_files = []
 	for root, dirs, files in os.walk(path):   
 		for file in files:

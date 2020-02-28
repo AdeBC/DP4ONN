@@ -131,9 +131,6 @@ def addNodesToTree(tree, nodes):
 	# 遍历树：按顺序查找，找不到就新建节点
 	current_node = 'root'
 	for node in nodes:
-		# all_nodes_identifier = [n.identifier for n in tree.all_nodes() ]			# how to deal with unhashable node Uncul. Bact.
-		# if node not in all_nodes_identifier:
-			# if node[-20:] != 'uncultured_bacterium': 
 		childrens_identifier = [n.identifier for n in tree.children(current_node)]  # operation needed 
 		if node not in childrens_identifier:
 			tree.create_node(node.title(), node, parent=current_node, data=0)
