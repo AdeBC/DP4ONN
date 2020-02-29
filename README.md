@@ -1,5 +1,5 @@
-# DP4ONN
-Data Preprocessor for Ontology-aware Neural Network
+# DP4ONN 
+## Data Preprocessor for Ontology-aware Neural Network
 
 This work can make the data preprocessing and sample statistics of the ontology neural network easier. Due to the use of three predefined classes, the simplicity and efficiency of the code are greatly improved. For very time-consuming big data calculations, any minor data or program errors can cost you days or even weeks. Using this program to check the integrity of all data and error values before processing can greatly reduce the probability of your program running errors. 
 
