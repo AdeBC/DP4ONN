@@ -106,8 +106,9 @@ class super_tree(Tree):
 		np.save(file, matrix)
 
 	def copy(self, ):
-		# not working
-		return super_tree(self.subtree(self.root), deep=True) 
+		# not working----test 
+		return pickle.loads(pickle.dumps(self, -1))
+		# return super_tree(self.subtree(self.root), deep=True) 
 
 	def remove_levels(self, level: int):
 		# tested
